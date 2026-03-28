@@ -1,6 +1,5 @@
 /**
- * 採用パネル
- * 候補者一覧の表示と採用アクション
+ * 採用パネル — ライトテーマ版
  */
 
 import { useState, type ReactNode } from 'react'
@@ -8,26 +7,15 @@ import type { SimulationManager } from '@core/simulation/SimulationManager.js'
 import type { Candidate } from '@game-types/employee.js'
 import { useGameStore } from '@ui/stores/gameStore.js'
 
-/** グレードの日本語ラベル */
 const GRADE_LABELS: Record<string, string> = {
-  junior: 'Jr',
-  mid: 'Mid',
-  senior: 'Sr',
-  lead: 'Lead',
-  executive: 'Exec',
+  intern: 'Int', junior: 'Jr', mid: 'Mid', senior: 'Sr', lead: 'Lead',
+  manager: 'Mgr', director: 'Dir', vp: 'VP', cxo: 'CxO', ceo: 'CEO',
 }
-
-/** 部門の日本語ラベル */
 const DEPT_LABELS: Record<string, string> = {
-  engineering: 'エンジニア',
-  product: '企画',
-  sales: '営業',
-  marketing: 'マーケ',
-  customer_success: 'CS',
-  hr: '人事',
-  finance: '経理',
-  legal: '法務',
-  executive: '経営',
+  engineering: 'エンジニア', product: '企画', design: 'デザイン',
+  sales: '営業', marketing: 'マーケ', customer_success: 'CS',
+  hr: '人事', finance: '経理', legal: '法務',
+  operations: 'Ops', executive: '経営',
 }
 
 interface HirePanelProps {
@@ -41,113 +29,64 @@ export function HirePanel(props: HirePanelProps): ReactNode {
   const currentDate = useGameStore((s) => s.currentDate)
   const cash = useGameStore((s) => s.cash)
 
-  const handleHire = (candidate: Candidate): void => {
-    if (cash < candidate.expectedSalary * 3) return
-    props.simulation.hireCandidate(candidate.id, currentDate.totalDays)
+  const handleHire = (c: Candidate): void => {
+    if (cash < c.expectedSalary * 3) return
+    props.simulation.hireCandidate(c.id, currentDate.totalDays)
     forceUpdate((n) => n + 1)
   }
 
   return (
-    <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 w-[700px] max-h-[400px]
-                    rounded-xl overflow-hidden"
-         style={{ background: 'rgba(30,27,46,0.98)', border: '1px solid rgba(59,130,246,0.3)' }}>
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700/50">
-        <h3 className="text-blue-400 font-bold text-sm">採用候補者</h3>
-        <button onClick={props.onClose} className="text-gray-500 hover:text-white text-xs">
-          閉じる
-        </button>
+    <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-50 w-[660px] max-h-[380px] glass-panel border border-blue-200 overflow-hidden animate-slide-up">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+        <h3 className="text-sm font-bold text-blue-600">採用候補者</h3>
+        <button onClick={props.onClose} className="text-slate-400 hover:text-slate-600 text-xs font-medium">閉じる</button>
       </div>
-
-      {/* 候補者リスト */}
-      <div className="p-3 space-y-2 overflow-y-auto max-h-[340px]">
+      <div className="p-3 space-y-2 overflow-y-auto max-h-[320px]">
         {candidates.length === 0 ? (
-          <p className="text-gray-500 text-xs text-center py-8">
-            現在、候補者はいません。数日お待ちください。
-          </p>
-        ) : (
-          candidates.map((candidate) => (
-            <CandidateCard
-              key={candidate.id}
-              candidate={candidate}
-              canAfford={cash >= candidate.expectedSalary * 3}
-              onHire={() => handleHire(candidate)}
-            />
-          ))
-        )}
+          <p className="text-slate-400 text-xs text-center py-8">候補者がいません。数日お待ちください。</p>
+        ) : candidates.map((c) => (
+          <div key={c.id} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 hover:bg-blue-50/50 transition-colors border border-transparent hover:border-blue-100">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-800 truncate">{c.name}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-medium">
+                  {DEPT_LABELS[c.department] ?? c.department}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">
+                  {GRADE_LABELS[c.grade] ?? c.grade} Lv.{c.level}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 mt-1.5">
+                <StatBar label="技術" value={c.stats.engineering} />
+                <StatBar label="営業" value={c.stats.sales} />
+                <StatBar label="企画" value={c.stats.planning} />
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <span className="text-[11px] text-slate-400 font-mono">{c.expectedSalary}万/月</span>
+              <button onClick={() => handleHire(c)}
+                disabled={cash < c.expectedSalary * 3}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                  cash >= c.expectedSalary * 3
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                }`}>採用</button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
-function CandidateCard(props: {
-  candidate: Candidate
-  canAfford: boolean
-  onHire: () => void
-}): ReactNode {
-  const { candidate } = props
-  const topStat = Math.max(
-    candidate.stats.engineering,
-    candidate.stats.sales,
-    candidate.stats.planning,
-  )
-
-  return (
-    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/40 hover:bg-gray-800/60 transition-colors">
-      {/* 名前・役職 */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-white text-sm font-medium truncate">
-            {candidate.name}
-          </span>
-          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-900/40 text-blue-300">
-            {DEPT_LABELS[candidate.department] ?? candidate.department}
-          </span>
-          <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700/60 text-gray-300">
-            {GRADE_LABELS[candidate.grade] ?? candidate.grade} Lv.{candidate.level}
-          </span>
-        </div>
-        {/* 能力バー */}
-        <div className="flex items-center gap-3 mt-1.5">
-          <StatMini label="技術" value={candidate.stats.engineering} max={topStat} />
-          <StatMini label="営業" value={candidate.stats.sales} max={topStat} />
-          <StatMini label="企画" value={candidate.stats.planning} max={topStat} />
-        </div>
-      </div>
-
-      {/* 希望年俸 & 採用ボタン */}
-      <div className="flex flex-col items-end gap-1 shrink-0">
-        <span className="text-gray-400 text-xs">
-          {candidate.expectedSalary}万円/月
-        </span>
-        <button
-          onClick={props.onHire}
-          disabled={!props.canAfford}
-          className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
-            props.canAfford
-              ? 'bg-blue-500 text-white hover:bg-blue-400'
-              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          採用
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function StatMini(props: { label: string; value: number; max: number }): ReactNode {
-  const width = props.max > 0 ? (props.value / 100) * 100 : 0
+function StatBar(props: { label: string; value: number }): ReactNode {
   return (
     <div className="flex items-center gap-1">
-      <span className="text-gray-500 text-[10px] w-5">{props.label}</span>
-      <div className="w-16 h-1.5 rounded-full bg-gray-700/60 overflow-hidden">
-        <div
-          className="h-full rounded-full bg-blue-400/70"
-          style={{ width: `${width}%` }}
-        />
+      <span className="text-[10px] text-slate-400 w-5">{props.label}</span>
+      <div className="w-14 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+        <div className="h-full rounded-full bg-blue-400" style={{ width: `${props.value}%` }} />
       </div>
-      <span className="text-gray-400 text-[10px] w-5 text-right">{props.value}</span>
+      <span className="text-[10px] text-slate-500 font-mono w-5 text-right">{props.value}</span>
     </div>
   )
 }

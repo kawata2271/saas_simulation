@@ -27,24 +27,24 @@ import { SeededRandom } from '@utils/random.js'
 // ─── タイル色テーブル ───
 
 const TILE_COLORS: Record<string, number> = {
-  [TILE_TYPES.EMPTY]: 0x0a0818,
-  [TILE_TYPES.FLOOR_WOOD]: 0x5a4a32,
-  [TILE_TYPES.FLOOR_CARPET]: 0x3a4a5a,
-  [TILE_TYPES.FLOOR_CONCRETE]: 0x4a4a4a,
-  [TILE_TYPES.FLOOR_TILE]: 0x5a6a5a,
-  [TILE_TYPES.WALL_NORTH]: 0x2a2540,
-  [TILE_TYPES.WALL_EAST]: 0x2a2540,
-  [TILE_TYPES.WALL_SOUTH]: 0x2a2540,
-  [TILE_TYPES.WALL_WEST]: 0x2a2540,
-  [TILE_TYPES.WALL_CORNER_NE]: 0x222040,
-  [TILE_TYPES.WALL_CORNER_NW]: 0x222040,
-  [TILE_TYPES.WALL_CORNER_SE]: 0x222040,
-  [TILE_TYPES.WALL_CORNER_SW]: 0x222040,
-  [TILE_TYPES.DOOR]: 0x6a5a32,
-  [TILE_TYPES.WINDOW]: 0x4488aa,
-  [TILE_TYPES.PILLAR]: 0x555555,
-  [TILE_TYPES.STAIRS]: 0x666644,
-  [TILE_TYPES.ELEVATOR]: 0x555566,
+  [TILE_TYPES.EMPTY]: 0xE2E8F0,
+  [TILE_TYPES.FLOOR_WOOD]: 0xD4A574,
+  [TILE_TYPES.FLOOR_CARPET]: 0x94A3B8,
+  [TILE_TYPES.FLOOR_CONCRETE]: 0xBDC3CB,
+  [TILE_TYPES.FLOOR_TILE]: 0xC8D6C0,
+  [TILE_TYPES.WALL_NORTH]: 0x8B95A5,
+  [TILE_TYPES.WALL_EAST]: 0x8B95A5,
+  [TILE_TYPES.WALL_SOUTH]: 0x8B95A5,
+  [TILE_TYPES.WALL_WEST]: 0x8B95A5,
+  [TILE_TYPES.WALL_CORNER_NE]: 0x7B8595,
+  [TILE_TYPES.WALL_CORNER_NW]: 0x7B8595,
+  [TILE_TYPES.WALL_CORNER_SE]: 0x7B8595,
+  [TILE_TYPES.WALL_CORNER_SW]: 0x7B8595,
+  [TILE_TYPES.DOOR]: 0xC4956A,
+  [TILE_TYPES.WINDOW]: 0x7DBBDD,
+  [TILE_TYPES.PILLAR]: 0x9CA3AF,
+  [TILE_TYPES.STAIRS]: 0xB8B090,
+  [TILE_TYPES.ELEVATOR]: 0xA0A8B8,
 }
 
 /** キャラクターアクション色 */
@@ -95,7 +95,7 @@ export class OfficeRenderer {
   async init(parentElement: HTMLElement): Promise<void> {
     this.app = new Application()
     await this.app.init({
-      background: 0x0a0818,
+      background: 0xF1F5F9,
       resizeTo: parentElement,
       antialias: true,
       resolution: window.devicePixelRatio || 1,
@@ -190,7 +190,7 @@ export class OfficeRenderer {
       { x, y: y + TILE_SIZE.HEIGHT }, { x: x - hw, y: y + hh },
     ])
     g.fill({ color })
-    g.stroke({ color: 0x4a4660, width: 0.5, alpha: 0.3 })
+    g.stroke({ color: 0x94A3B8, width: 0.5, alpha: 0.3 })
 
     // 左側面
     g.poly([
@@ -248,7 +248,7 @@ export class OfficeRenderer {
 
     // 影
     g.ellipse(x, y + 14, 6, 3)
-    g.fill({ color: 0x000000, alpha: 0.3 })
+    g.fill({ color: 0x000000, alpha: 0.15 })
 
     // 体
     g.roundRect(x - 4, y - 8, 8, 16, 2)
