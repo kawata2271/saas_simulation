@@ -69,15 +69,4 @@ export interface CultureState {
   readonly teamwork: number
 }
 
-/** オフィスレベル定義 */
-export const OFFICE_LEVELS = {
-  GARAGE: 0,
-  SMALL_OFFICE: 1,
-  MEDIUM_OFFICE: 2,
-  LARGE_OFFICE: 3,
-  FLOOR: 4,
-  BUILDING: 5,
-  CAMPUS: 6,
-} as const satisfies Record<string, number>
-
-export type OfficeLevel = (typeof OFFICE_LEVELS)[keyof typeof OFFICE_LEVELS]
+// OfficeLevel / OFFICE_LEVELS は rendering.ts で定義（統一）
