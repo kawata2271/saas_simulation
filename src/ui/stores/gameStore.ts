@@ -48,6 +48,11 @@ const initialDate: GameDate = {
   quarter: 1,
   weekday: 1,
   totalDays: 0,
+  isMonthEnd: false,
+  isQuarterEnd: false,
+  isYearEnd: false,
+  isHoliday: false,
+  holidayName: null,
 }
 
 const initialState: GameStoreState = {

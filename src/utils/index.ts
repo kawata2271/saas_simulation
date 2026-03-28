@@ -1,4 +1,5 @@
 export { SeededRandom } from './random.js'
+export type { RNGState } from './random.js'
 export { clamp, lerp, percentage, roundToInt, compoundGrowth, movingAverage } from './math.js'
 export { formatMoney, formatPercent, formatCompact, formatGameDate } from './format.js'
 export { devLog, devWarn, createTimer } from './debug.js'

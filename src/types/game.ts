@@ -33,8 +33,19 @@ export interface GameDate {
   readonly month: number
   readonly day: number
   readonly quarter: number
+  /** 曜日 (1=月 ... 5=金) */
   readonly weekday: number
   readonly totalDays: number
+  /** 月末かどうか */
+  readonly isMonthEnd: boolean
+  /** 四半期末かどうか */
+  readonly isQuarterEnd: boolean
+  /** 年末かどうか */
+  readonly isYearEnd: boolean
+  /** 祝日かどうか */
+  readonly isHoliday: boolean
+  /** 祝日名（祝日でなければnull） */
+  readonly holidayName: string | null
 }
 
 /** ゲーム内時間状態 */

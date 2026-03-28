@@ -80,7 +80,11 @@ export class SimulationManager {
   hireCandidate(candidateId: string, dayNumber: number): boolean {
     const emp = this.hr.hire(candidateId, dayNumber)
     if (!emp) return false
-    this.eventBus.emit('employee:hired', { employeeId: emp.id })
+    this.eventBus.emit('employee:hired', {
+      employeeId: emp.id,
+      department: emp.department,
+      salary: emp.salary,
+    })
     return true
   }
 
@@ -98,7 +102,7 @@ export class SimulationManager {
   releaseFeatures(): void {
     const result = this.product.releaseFeatures(this.rng)
     for (const feat of result.released) {
-      this.eventBus.emit('product:released', { version: feat.name })
+      this.eventBus.emit('product:released', { version: feat.name, quality: feat.quality })
     }
   }
 
@@ -124,7 +128,7 @@ export class SimulationManager {
     const cultureSat = this.calcCultureSatisfaction()
     const quitIds = this.hr.updateDaily(this.rng, dayNumber, workload, cultureSat)
     for (const id of quitIds) {
-      this.eventBus.emit('employee:quit', { employeeId: id })
+      this.eventBus.emit('employee:quit', { employeeId: id, reason: 'voluntary' })
     }
 
     // プロダクト開発の日次更新
