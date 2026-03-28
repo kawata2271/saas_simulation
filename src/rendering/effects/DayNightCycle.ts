@@ -16,12 +16,12 @@ interface LightingConfig {
 }
 
 const LIGHTING_TABLE: Record<TimePeriod, LightingConfig> = {
-  [TIME_PERIODS.DAWN]:       { brightness: 0.6,  tint: 0xffd699, ambientColor: 0x332211 },
-  [TIME_PERIODS.MORNING]:    { brightness: 0.85, tint: 0xffeebb, ambientColor: 0x222222 },
+  [TIME_PERIODS.DAWN]:       { brightness: 0.90, tint: 0xffeedd, ambientColor: 0x443322 },
+  [TIME_PERIODS.MORNING]:    { brightness: 0.95, tint: 0xfff5e6, ambientColor: 0x222211 },
   [TIME_PERIODS.AFTERNOON]:  { brightness: 1.0,  tint: 0xffffff, ambientColor: 0x111111 },
-  [TIME_PERIODS.EVENING]:    { brightness: 0.75, tint: 0xff9944, ambientColor: 0x331100 },
-  [TIME_PERIODS.NIGHT]:      { brightness: 0.4,  tint: 0x4466aa, ambientColor: 0x000022 },
-  [TIME_PERIODS.LATE_NIGHT]: { brightness: 0.2,  tint: 0x223355, ambientColor: 0x000011 },
+  [TIME_PERIODS.EVENING]:    { brightness: 0.88, tint: 0xffcc88, ambientColor: 0x332200 },
+  [TIME_PERIODS.NIGHT]:      { brightness: 0.75, tint: 0x8899bb, ambientColor: 0x112233 },
+  [TIME_PERIODS.LATE_NIGHT]: { brightness: 0.65, tint: 0x6677aa, ambientColor: 0x0a1122 },
 }
 
 /** 時間 → 時間帯 */
@@ -112,7 +112,7 @@ export class DayNightCycle {
   private applyOverlay(): void {
     if (!this.overlay) return
     const darkness = 1 - this.currentState.brightness
-    this.overlay.alpha = darkness * 0.6
+    this.overlay.alpha = darkness * 0.3
     this.overlay.tint = this.currentState.ambientColor
   }
 
