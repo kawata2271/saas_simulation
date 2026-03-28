@@ -137,7 +137,7 @@ export class SimulationManager {
     const avgStats = this.hr.getAverageStats()
     this.product.updateDaily(
       engineerCount,
-      avgStats.technical || 50,
+      avgStats.engineering || 50,
       avgStats.planning || 50,
       this.rng,
     )

@@ -87,7 +87,7 @@ function CandidateCard(props: {
 }): ReactNode {
   const { candidate } = props
   const topStat = Math.max(
-    candidate.stats.technical,
+    candidate.stats.engineering,
     candidate.stats.sales,
     candidate.stats.planning,
   )
@@ -109,7 +109,7 @@ function CandidateCard(props: {
         </div>
         {/* 能力バー */}
         <div className="flex items-center gap-3 mt-1.5">
-          <StatMini label="技術" value={candidate.stats.technical} max={topStat} />
+          <StatMini label="技術" value={candidate.stats.engineering} max={topStat} />
           <StatMini label="営業" value={candidate.stats.sales} max={topStat} />
           <StatMini label="企画" value={candidate.stats.planning} max={topStat} />
         </div>

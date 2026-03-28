@@ -1,2 +1,7 @@
 export { HRManager } from './HRManager.js'
 export { generateName } from './NameGenerator.js'
+export { RecruitmentPipeline } from './RecruitmentPipeline.js'
+export type { JobPosting, PipelineResult } from './RecruitmentPipeline.js'
+export { calcTurnoverRisk, processMonthlyTurnover, applyRetentionAction } from './TurnoverEngine.js'
+export type { TurnoverRisk } from './TurnoverEngine.js'
+export { calcDailyExp, canPromote, promote, rollSpecialAbility, calcMentoringEffect } from './GrowthEngine.js'

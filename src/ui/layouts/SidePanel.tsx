@@ -86,7 +86,7 @@ function HRTab(): ReactNode {
           <div key={emp.id} className="flex items-center justify-between text-xs">
             <span className="text-white truncate max-w-[140px]">{emp.name}</span>
             <span className="text-gray-400">
-              {emp.grade} | M:{Math.round(emp.mood.motivation)} S:{Math.round(emp.mood.stress)}
+              {emp.grade} | M:{Math.round(emp.morale.motivation)} S:{Math.round(emp.morale.stress)}
             </span>
           </div>
         ))}

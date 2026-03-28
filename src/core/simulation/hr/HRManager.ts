@@ -3,8 +3,8 @@
  * 採用候補者生成、雇用、退職、給与計算、感情変動
  */
 
-import type { EmployeeState, EmployeeMood, Candidate, Department, Grade } from '@game-types/employee.js'
-import { DEPARTMENTS, GRADES, GRADE_LEVEL_RANGES } from '@game-types/employee.js'
+import type { EmployeeState, EmployeeMorale, Candidate, Department, Position } from '@game-types/employee.js'
+import { DEPARTMENTS, POSITIONS, GRADE_LEVEL_RANGES, POSITION_BASE_SALARY } from '@game-types/employee.js'
 import type { SeededRandom } from '@utils/random.js'
 import { HR_CONSTANTS } from '@core/data/constants.js'
 import { calcQuitRate } from '@core/data/formulas.js'
@@ -21,11 +21,11 @@ const HIREABLE_DEPARTMENTS: Department[] = [
 ]
 
 /** グレードリスト */
-const GRADE_LIST: Grade[] = [
-  GRADES.JUNIOR,
-  GRADES.MID,
-  GRADES.SENIOR,
-  GRADES.LEAD,
+const GRADE_LIST: Position[] = [
+  POSITIONS.JUNIOR,
+  POSITIONS.MID,
+  POSITIONS.SENIOR,
+  POSITIONS.LEAD,
 ]
 
 /**
@@ -83,7 +83,7 @@ export class HRManager {
     const range = GRADE_LEVEL_RANGES[grade]
     const level = rng.nextInt(range.min, range.max)
 
-    const baseSalary = HR_CONSTANTS.BASE_SALARY[grade]
+    const baseSalary = POSITION_BASE_SALARY[grade] / 12
     const variance = 1 + (rng.next() - 0.5) * HR_CONSTANTS.SALARY_VARIANCE * 2
     const expectedSalary = Math.round(baseSalary * variance)
 
@@ -94,11 +94,15 @@ export class HRManager {
       grade,
       level,
       stats: {
-        technical: rng.nextInt(level * 8, Math.min(level * 12 + 10, 100)),
+        engineering: rng.nextInt(level * 8, Math.min(level * 12 + 10, 100)),
         sales: rng.nextInt(level * 5, Math.min(level * 10 + 10, 100)),
         planning: rng.nextInt(level * 5, Math.min(level * 10 + 10, 100)),
         management: rng.nextInt(level * 3, Math.min(level * 8 + 5, 100)),
+        creativity: rng.nextInt(level * 4, Math.min(level * 10 + 10, 100)),
+        communication: rng.nextInt(level * 4, Math.min(level * 10 + 10, 100)),
+        resilience: rng.nextInt(level * 4, Math.min(level * 10 + 10, 100)),
         loyalty: rng.nextInt(30, 80),
+        growthPotential: rng.nextInt(20, 90),
       },
       expectedSalary,
       specialAbilities: [],
@@ -118,19 +122,29 @@ export class HRManager {
       id: `emp_${this.nextEmployeeId++}`,
       name: candidate.name,
       department: candidate.department,
-      grade: candidate.grade,
+      position: candidate.grade,
+      grade: GRADE_LEVEL_RANGES[candidate.grade].min,
       level: candidate.level,
       stats: candidate.stats,
-      mood: {
+      morale: {
         motivation: 80,
         stress: 10,
         growthDesire: 60,
         satisfaction: 70,
+        burnoutRisk: 10,
+        belongingness: 60,
       },
       salary: candidate.expectedSalary,
       hiredDate: dayNumber,
       specialAbilities: candidate.specialAbilities,
       isRemote: false,
+      experience: 0,
+      relationships: [],
+      mentorId: null,
+      managerId: null,
+      turnoverFlag: 'none',
+      lastPromotionDate: null,
+      stockOptions: 0,
     }
 
     this.employees.set(employee.id, employee)
@@ -153,14 +167,14 @@ export class HRManager {
 
     for (const [id, emp] of this.employees) {
       // 感情変動
-      const newMood = this.updateMood(emp.mood, workload, cultureSatisfaction)
-      const updatedEmp = { ...emp, mood: newMood }
+      const newMorale = this.updateMorale(emp.morale, workload, cultureSatisfaction)
+      const updatedEmp = { ...emp, morale: newMorale }
 
       // 退職判定
       const quitRate = calcQuitRate(
-        newMood.motivation,
-        newMood.stress,
-        newMood.satisfaction,
+        newMorale.motivation,
+        newMorale.stress,
+        newMorale.satisfaction,
       )
       if (rng.chance(quitRate)) {
         quitIds.push(id)
@@ -179,11 +193,11 @@ export class HRManager {
   }
 
   /** 感情を更新する */
-  private updateMood(
-    mood: EmployeeMood,
+  private updateMorale(
+    morale: EmployeeMorale,
     workload: number,
     cultureSatisfaction: number,
-  ): EmployeeMood {
+  ): EmployeeMorale {
     const stressDelta = workload > 1.2
       ? HR_CONSTANTS.STRESS_ACCUMULATION * workload
       : -HR_CONSTANTS.STRESS_ACCUMULATION * 0.5
@@ -193,14 +207,16 @@ export class HRManager {
       : -HR_CONSTANTS.MOTIVATION_RECOVERY * 0.5
 
     return {
-      motivation: clamp(mood.motivation + motivDelta, 0, 100),
-      stress: clamp(mood.stress + stressDelta, 0, 100),
-      growthDesire: mood.growthDesire,
+      motivation: clamp(morale.motivation + motivDelta, 0, 100),
+      stress: clamp(morale.stress + stressDelta, 0, 100),
+      growthDesire: morale.growthDesire,
       satisfaction: clamp(
-        mood.satisfaction + (cultureSatisfaction - 50) * 0.01,
+        morale.satisfaction + (cultureSatisfaction - 50) * 0.01,
         0,
         100,
       ),
+      burnoutRisk: morale.burnoutRisk,
+      belongingness: morale.belongingness,
     }
   }
 
@@ -214,19 +230,19 @@ export class HRManager {
   }
 
   /** 従業員の平均能力値を計算する */
-  getAverageStats(): { technical: number; sales: number; planning: number } {
+  getAverageStats(): { engineering: number; sales: number; planning: number } {
     if (this.employees.size === 0) {
-      return { technical: 0, sales: 0, planning: 0 }
+      return { engineering: 0, sales: 0, planning: 0 }
     }
     let tech = 0, sales = 0, plan = 0
     for (const emp of this.employees.values()) {
-      tech += emp.stats.technical
+      tech += emp.stats.engineering
       sales += emp.stats.sales
       plan += emp.stats.planning
     }
     const n = this.employees.size
     return {
-      technical: Math.round(tech / n),
+      engineering: Math.round(tech / n),
       sales: Math.round(sales / n),
       planning: Math.round(plan / n),
     }
