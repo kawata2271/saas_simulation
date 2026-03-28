@@ -11,6 +11,10 @@ import { HRManager } from './hr/HRManager.js'
 import { ProductManager } from './product/ProductManager.js'
 import { SalesManager } from './sales/SalesManager.js'
 import { FinanceManager } from './finance/FinanceManager.js'
+import { MarketSimulation } from './market/MarketSimulation.js'
+import { EventEngine } from '@core/event/EventEngine.js'
+import type { GameStateSnapshot } from '@core/event/EventEngine.js'
+import { ALL_EVENTS } from '@core/event/events/index.js'
 import { FINANCE_CONSTANTS } from '@core/data/constants.js'
 import { SeededRandom } from '@utils/random.js'
 
@@ -28,6 +32,9 @@ export interface SimulationSnapshot {
   readonly releasedFeatures: number
   readonly reputation: number
   readonly stage: string
+  readonly economicPhase: string
+  readonly competitorCount: number
+  readonly activeEventCount: number
 }
 
 /**
@@ -39,6 +46,8 @@ export class SimulationManager {
   readonly product: ProductManager
   readonly sales: SalesManager
   finance: FinanceManager
+  readonly market: MarketSimulation
+  readonly events: EventEngine
 
   private rng: SeededRandom
   private readonly eventBus: EventBus
@@ -54,6 +63,9 @@ export class SimulationManager {
     this.product = new ProductManager()
     this.sales = new SalesManager()
     this.finance = new FinanceManager(FINANCE_CONSTANTS.INITIAL_CASH)
+    this.market = new MarketSimulation(this.rng.fork('market'), 'horizontal_saas')
+    this.events = new EventEngine(eventBus, this.rng.fork('events'))
+    this.events.registerEvents(ALL_EVENTS)
   }
 
   /** ゲームが初期化済みかどうか */
@@ -168,6 +180,9 @@ export class SimulationManager {
       this.lastQuarter = date.quarter
     }
 
+    // イベント評価
+    this.evaluateEvents(date)
+
     // 会社状態更新
     this.company.updateDaily(
       this.hr.getHeadcount() + 1, // +1 for founder
@@ -212,10 +227,40 @@ export class SimulationManager {
     const company = this.company.getState()!
     this.finance.closeQuarter(company.stage)
 
+    // 市場シミュレーション更新
+    this.market.updateQuarterly(
+      this.sales.getARR(),
+      this.product.getProductScore(),
+    )
+
     this.eventBus.emit('quarter-end', {
       quarter: date.quarter,
       year: date.year,
     })
+  }
+
+  /** イベント評価 */
+  private evaluateEvents(date: GameDate): void {
+    const company = this.company.getState()!
+    const snapshot: GameStateSnapshot = {
+      tick: date.totalDays,
+      employees: this.hr.getHeadcount(),
+      cash: this.finance.getCash(),
+      mrr: this.sales.getMRR(),
+      arr: this.sales.getARR(),
+      runway: this.finance.getLastMetrics()?.runway ?? 999,
+      productScore: this.product.getProductScore(),
+      techDebt: this.product.getTechDebt(),
+      bugCount: this.product.getBugCount(),
+      activeCustomers: this.sales.getActiveCustomers(),
+      reputation: company.reputation,
+      stage: company.stage,
+      companyAge: date.totalDays - company.foundedDate,
+      headcount: this.hr.getHeadcount() + 1,
+      flags: new Set(),
+      completedEventIds: new Set(this.events.getHistory().map((h) => h.eventId)),
+    }
+    this.events.evaluate(snapshot)
   }
 
   /** 財務コストを更新する */
@@ -268,6 +313,9 @@ export class SimulationManager {
       releasedFeatures: this.product.getReleasedFeatureCount(),
       reputation: company?.reputation ?? 0,
       stage: company?.stage ?? 'pre_seed',
+      economicPhase: this.market.getPhase(),
+      competitorCount: this.market.getCompetitorCount(),
+      activeEventCount: this.events.getActiveEvents().length,
     }
   }
 }

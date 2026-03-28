@@ -5,12 +5,14 @@
 /** イベントカテゴリ */
 export const EVENT_CATEGORIES = {
   MACRO: 'macro',
+  INDUSTRY: 'industry',
   COMPANY: 'company',
   HR: 'hr',
   PRODUCT: 'product',
   SALES: 'sales',
   FUNDING: 'funding',
   CRISIS: 'crisis',
+  MILESTONE: 'milestone',
   RANDOM: 'random',
 } as const satisfies Record<string, string>
 
@@ -77,6 +79,8 @@ export interface GameEventDefinition {
   readonly maxOccurrences: number
   /** イベント発生確率（0-1、条件を満たした場合） */
   readonly probability: number
+  /** 最速発火ティック */
+  readonly earliestTick: number
 }
 
 /** 発火済みイベント記録 */
