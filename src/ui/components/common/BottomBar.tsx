@@ -1,6 +1,5 @@
 /**
- * ボトムバー
- * 画面下部のアクションバー: 採用、開発、営業、リリースの各アクション
+ * BottomBar — 画面下部のアクションバー（ライトテーマ版）
  */
 
 import { useState, type ReactNode } from 'react'
@@ -20,72 +19,32 @@ export function BottomBar(props: BottomBarProps): ReactNode {
   const [activePanel, setActivePanel] = useState<ActivePanel>('none')
   const isPaused = useGameStore((s) => s.isPaused)
 
-  const togglePanel = (panel: ActivePanel): void => {
-    setActivePanel((prev) => (prev === panel ? 'none' : panel))
+  const toggle = (panel: ActivePanel): void => {
+    setActivePanel((p) => (p === panel ? 'none' : panel))
   }
 
   return (
     <>
-      {/* アクションパネル（ボトムバーの上に表示） */}
-      {activePanel === 'hire' && (
-        <HirePanel
-          simulation={props.simulation}
-          onClose={() => setActivePanel('none')}
-        />
-      )}
-      {activePanel === 'dev' && (
-        <DevPanel
-          simulation={props.simulation}
-          onClose={() => setActivePanel('none')}
-        />
-      )}
-      {activePanel === 'sales' && (
-        <SalesPanel
-          simulation={props.simulation}
-          onClose={() => setActivePanel('none')}
-        />
-      )}
+      {activePanel === 'hire' && <HirePanel simulation={props.simulation} onClose={() => setActivePanel('none')} />}
+      {activePanel === 'dev' && <DevPanel simulation={props.simulation} onClose={() => setActivePanel('none')} />}
+      {activePanel === 'sales' && <SalesPanel simulation={props.simulation} onClose={() => setActivePanel('none')} />}
 
-      {/* ボトムバー */}
-      <div
-        className="absolute bottom-0 left-0 right-0 z-40 px-4 py-2"
-        style={{
-          background: 'linear-gradient(0deg, rgba(30,27,46,0.98) 60%, rgba(30,27,46,0) 100%)',
-        }}
-      >
-        <div className="flex items-center justify-between">
-          {/* 左: ステータス */}
-          <div className="flex items-center gap-3">
+      <div className="absolute bottom-0 left-0 right-0 z-40 px-3 pb-2 pointer-events-none">
+        <div className="glass-panel pointer-events-auto px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             {isPaused && (
-              <span className="text-red-400 text-xs font-bold animate-pulse">
+              <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded animate-pulse-soft">
                 PAUSED
               </span>
             )}
-            <span className="text-gray-600 text-xs">
-              ドラッグで移動 / スクロールでズーム
+            <span className="text-[11px] text-slate-400">
+              ドラッグで移動 / スクロールでズーム / WASD
             </span>
           </div>
-
-          {/* 右: アクションボタン */}
           <div className="flex items-center gap-2">
-            <ActionButton
-              label="採用"
-              active={activePanel === 'hire'}
-              color="blue"
-              onClick={() => togglePanel('hire')}
-            />
-            <ActionButton
-              label="開発"
-              active={activePanel === 'dev'}
-              color="green"
-              onClick={() => togglePanel('dev')}
-            />
-            <ActionButton
-              label="営業"
-              active={activePanel === 'sales'}
-              color="purple"
-              onClick={() => togglePanel('sales')}
-            />
+            <ActionBtn label="採用" active={activePanel === 'hire'} color="blue" onClick={() => toggle('hire')} />
+            <ActionBtn label="開発" active={activePanel === 'dev'} color="emerald" onClick={() => toggle('dev')} />
+            <ActionBtn label="営業" active={activePanel === 'sales'} color="violet" onClick={() => toggle('sales')} />
           </div>
         </div>
       </div>
@@ -93,23 +52,17 @@ export function BottomBar(props: BottomBarProps): ReactNode {
   )
 }
 
-function ActionButton(props: {
-  label: string
-  active: boolean
-  color: string
-  onClick: () => void
-}): ReactNode {
-  const colorMap: Record<string, string> = {
-    blue: props.active ? 'bg-blue-500 text-white' : 'bg-blue-900/40 text-blue-300 hover:bg-blue-800/40',
-    green: props.active ? 'bg-green-500 text-white' : 'bg-green-900/40 text-green-300 hover:bg-green-800/40',
-    purple: props.active ? 'bg-purple-500 text-white' : 'bg-purple-900/40 text-purple-300 hover:bg-purple-800/40',
+function ActionBtn(props: { label: string; active: boolean; color: string; onClick: () => void }): ReactNode {
+  const styles: Record<string, { active: string; inactive: string }> = {
+    blue: { active: 'bg-blue-600 text-white shadow-sm', inactive: 'bg-blue-50 text-blue-600 hover:bg-blue-100' },
+    emerald: { active: 'bg-emerald-600 text-white shadow-sm', inactive: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' },
+    violet: { active: 'bg-violet-600 text-white shadow-sm', inactive: 'bg-violet-50 text-violet-600 hover:bg-violet-100' },
   }
+  const s = styles[props.color] ?? styles['blue']
 
   return (
-    <button
-      onClick={props.onClick}
-      className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${colorMap[props.color] ?? ''}`}
-    >
+    <button onClick={props.onClick}
+      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${props.active ? s.active : s.inactive}`}>
       {props.label}
     </button>
   )
