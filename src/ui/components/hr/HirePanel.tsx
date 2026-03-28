@@ -21,6 +21,7 @@ const DEPT_LABELS: Record<string, string> = {
 interface HirePanelProps {
   simulation: SimulationManager
   onClose: () => void
+  onHired?: () => void
 }
 
 export function HirePanel(props: HirePanelProps): ReactNode {
@@ -33,6 +34,7 @@ export function HirePanel(props: HirePanelProps): ReactNode {
     if (cash < c.expectedSalary * 3) return
     props.simulation.hireCandidate(c.id, currentDate.totalDays)
     forceUpdate((n) => n + 1)
+    props.onHired?.()
   }
 
   return (

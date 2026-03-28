@@ -14,6 +14,7 @@ const FEATURE_NAMES = [
 interface DevPanelProps {
   simulation: SimulationManager
   onClose: () => void
+  onStarted?: () => void
 }
 
 export function DevPanel(props: DevPanelProps): ReactNode {
@@ -31,6 +32,7 @@ export function DevPanel(props: DevPanelProps): ReactNode {
     props.simulation.startFeature(name, complexity)
     setFeatureName('')
     forceUpdate((n) => n + 1)
+    props.onStarted?.()
   }
 
   const handleRelease = (): void => {

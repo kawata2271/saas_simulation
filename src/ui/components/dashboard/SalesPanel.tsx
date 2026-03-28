@@ -8,6 +8,7 @@ import type { SimulationManager } from '@core/simulation/SimulationManager.js'
 interface SalesPanelProps {
   simulation: SimulationManager
   onClose: () => void
+  onBudgetSet?: () => void
 }
 
 export function SalesPanel(props: SalesPanelProps): ReactNode {
@@ -21,6 +22,7 @@ export function SalesPanel(props: SalesPanelProps): ReactNode {
   const handleBudget = (v: number): void => {
     setBudget(v)
     props.simulation.setMarketingBudget(v)
+    props.onBudgetSet?.()
   }
 
   return (

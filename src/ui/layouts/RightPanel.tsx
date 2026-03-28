@@ -74,7 +74,7 @@ export function RightPanel(): ReactNode {
   const seniorCount = employees.filter((e) => e.level >= 7).length
 
   return (
-    <div className="absolute top-16 right-3 z-30 w-[260px] max-h-[calc(100vh-80px)] overflow-y-auto glass-panel">
+    <div className="absolute top-16 right-3 z-30 w-[260px] max-h-[calc(100vh-80px)] overflow-y-auto glass-panel" data-tutorial="right-panel">
       {/* 会社状況 */}
       <Section title="会社状況">
         <div className="grid grid-cols-2 gap-x-3 gap-y-1">

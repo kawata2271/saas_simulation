@@ -71,7 +71,7 @@ export function TopBar(): ReactNode {
 
   return (
     <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="mx-3 mt-2 glass-panel pointer-events-auto flex items-center justify-between px-4 py-2">
+      <div className="mx-3 mt-2 glass-panel pointer-events-auto flex items-center justify-between px-4 py-2" data-tutorial="top-bar">
         {/* 左: Company Info */}
         <div className="flex items-center gap-3 min-w-[200px]">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
@@ -88,7 +88,7 @@ export function TopBar(): ReactNode {
         </div>
 
         {/* 中央: Timer & Speed */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center" data-tutorial="speed-controls">
           <div className="flex items-center gap-2">
             <span className={`font-mono text-lg font-semibold tracking-tight ${
               isPaused ? 'text-red-500 animate-pulse-soft' : 'text-slate-800'
@@ -124,7 +124,7 @@ export function TopBar(): ReactNode {
         </div>
 
         {/* 右: Cash / Valuation / Period */}
-        <div className="flex items-center gap-5 min-w-[300px] justify-end">
+        <div className="flex items-center gap-5 min-w-[300px] justify-end" data-tutorial="cash-display">
           <div className="text-right">
             <p className="text-[10px] text-slate-400 font-medium">従業員</p>
             <p className="text-sm font-semibold text-blue-600">{headcount}名</p>
