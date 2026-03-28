@@ -1,1 +1,6 @@
 export { FinanceManager } from './FinanceManager.js'
+export type { MonthlyTransaction } from './FinanceManager.js'
+export { calculateValuation } from './ValuationEngine.js'
+export type { ValuationInputs } from './ValuationEngine.js'
+export { calculateMetrics, createMRRMovement } from './MetricsCalculator.js'
+export type { MetricsInput } from './MetricsCalculator.js'

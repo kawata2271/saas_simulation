@@ -3,134 +3,132 @@
  * 全金額は「万円」単位（内部は整数演算）
  */
 
-/** 損益計算書（PL） */
+// ─── P/L（損益計算書） ───
+
 export interface ProfitAndLoss {
-  /** MRR（月次経常収益） */
-  readonly mrr: number
-  /** ARR（年間経常収益） */
-  readonly arr: number
-  /** 売上高 */
-  readonly revenue: number
-  /** 売上原価 */
-  readonly cogs: number
-  /** 売上総利益 */
+  // 売上
+  readonly subscriptionRevenue: number
+  readonly professionalServices: number
+  readonly otherRevenue: number
+  readonly totalRevenue: number
+
+  // 売上原価
+  readonly hostingCost: number
+  readonly supportCost: number
+  readonly totalCOGS: number
   readonly grossProfit: number
-  /** 人件費 */
-  readonly personnelCost: number
-  /** 営業費（マーケティング等） */
-  readonly salesCost: number
-  /** 一般管理費 */
-  readonly sgaCost: number
-  /** 開発費 */
-  readonly rdCost: number
-  /** 営業利益 */
-  readonly operatingProfit: number
-  /** 営業外収益/費用 */
-  readonly nonOperatingIncome: number
-  /** 経常利益 */
-  readonly ordinaryProfit: number
-  /** 税引前利益 */
-  readonly profitBeforeTax: number
-  /** 法人税等 */
-  readonly tax: number
-  /** 当期純利益 */
-  readonly netProfit: number
+  readonly grossMargin: number
+
+  // 営業費用
+  readonly rdExpense: number
+  readonly salesMarketingExpense: number
+  readonly gaExpense: number
+  readonly totalOpex: number
+  readonly operatingIncome: number
+  readonly operatingMargin: number
+
+  // 営業外
+  readonly interestExpense: number
+  readonly otherIncome: number
+  readonly taxExpense: number
+  readonly netIncome: number
 }
 
-/** 貸借対照表（BS） */
+// ─── B/S（貸借対照表） ───
+
 export interface BalanceSheet {
-  /** 現金及び預金 */
+  // 資産
   readonly cash: number
-  /** 売掛金 */
   readonly accountsReceivable: number
-  /** その他流動資産 */
-  readonly otherCurrentAssets: number
-  /** 固定資産 */
+  readonly prepaidExpenses: number
+  readonly totalCurrentAssets: number
   readonly fixedAssets: number
-  /** 資産合計 */
+  readonly intangibleAssets: number
   readonly totalAssets: number
-  /** 買掛金 */
+
+  // 負債
   readonly accountsPayable: number
-  /** 短期借入金 */
+  readonly deferredRevenue: number
   readonly shortTermDebt: number
-  /** 長期借入金 */
+  readonly totalCurrentLiabilities: number
   readonly longTermDebt: number
-  /** 負債合計 */
   readonly totalLiabilities: number
-  /** 資本金 */
-  readonly capital: number
-  /** 利益剰余金 */
+
+  // 純資産
+  readonly commonStock: number
+  readonly additionalPaidIn: number
   readonly retainedEarnings: number
-  /** 純資産合計 */
   readonly totalEquity: number
 }
 
-/** キャッシュフロー計算書（CF） */
+// ─── C/F（キャッシュフロー計算書） ───
+
 export interface CashFlow {
-  /** 営業CF */
-  readonly operating: number
-  /** 投資CF */
-  readonly investing: number
-  /** 財務CF */
-  readonly financing: number
-  /** CF合計 */
-  readonly total: number
-  /** 期末現金残高 */
+  // 営業CF
+  readonly netIncome: number
+  readonly depreciation: number
+  readonly changeInAR: number
+  readonly changeInAP: number
+  readonly changeInDeferred: number
+  readonly operatingCashFlow: number
+
+  // 投資CF
+  readonly capex: number
+  readonly softwareDev: number
+  readonly investingCashFlow: number
+
+  // 財務CF
+  readonly equityRaised: number
+  readonly debtBorrowed: number
+  readonly debtRepaid: number
+  readonly financingCashFlow: number
+
+  readonly netCashChange: number
   readonly endingCash: number
 }
 
-/** SaaS KPIメトリクス */
+// ─── SaaS KPI ───
+
 export interface SaaSMetrics {
-  /** 月次経常収益 */
+  // 収益指標
   readonly mrr: number
-  /** 年間経常収益 */
   readonly arr: number
-  /** 解約率（月次） */
-  readonly churnRate: number
-  /** 顧客生涯価値 */
-  readonly ltv: number
-  /** 顧客獲得コスト */
-  readonly cac: number
-  /** LTV/CAC比率 */
-  readonly ltvCacRatio: number
-  /** ネットレベニューリテンション */
-  readonly nrr: number
-  /** Rule of 40 スコア */
-  readonly ruleOf40: number
-  /** 月間アクティブ顧客数 */
-  readonly activeCustomers: number
-  /** ARPU（顧客単価） */
+  readonly newMRR: number
+  readonly expansionMRR: number
+  readonly contractionMRR: number
+  readonly churnedMRR: number
+  readonly netNewMRR: number
+
+  // ユニットエコノミクス
   readonly arpu: number
-  /** バーンレート（月次） */
+  readonly cac: number
+  readonly ltv: number
+  readonly ltvCacRatio: number
+  readonly paybackMonths: number
+
+  // リテンション
+  readonly grossChurnRate: number
+  readonly netRevenueRetention: number
+  readonly logoRetentionRate: number
+
+  // 効率性
   readonly burnRate: number
-  /** ランウェイ（月数） */
   readonly runway: number
+  readonly ruleOf40: number
+  readonly magicNumber: number
+  readonly burnMultiple: number
+
+  // 従業員
+  readonly revenuePerEmployee: number
+  readonly headcountCostRatio: number
+
+  // 顧客
+  readonly totalCustomers: number
+  readonly nps: number
 }
 
-/** 財務状態の統合 */
-export interface FinancialState {
-  readonly pl: ProfitAndLoss
-  readonly bs: BalanceSheet
-  readonly cf: CashFlow
-  readonly metrics: SaaSMetrics
-  /** 企業価値（万円） */
-  readonly valuation: number
-  /** 累計調達額 */
-  readonly totalFunding: number
-}
+// ─── バリュエーション ───
 
-/** 資金調達ラウンド */
-export interface FundingRound {
-  readonly id: string
-  readonly type: FundingType
-  readonly amount: number
-  readonly valuation: number
-  readonly dilution: number
-  readonly investorNames: readonly string[]
-  readonly closedDate: number
-}
-
-/** 資金調達タイプ */
 export const FUNDING_TYPES = {
   BOOTSTRAP: 'bootstrap',
   ANGEL: 'angel',
@@ -138,8 +136,60 @@ export const FUNDING_TYPES = {
   SERIES_A: 'series_a',
   SERIES_B: 'series_b',
   SERIES_C: 'series_c',
+  SERIES_D: 'series_d',
   DEBT: 'debt',
+  PRE_IPO: 'pre_ipo',
   IPO: 'ipo',
 } as const satisfies Record<string, string>
 
 export type FundingType = (typeof FUNDING_TYPES)[keyof typeof FUNDING_TYPES]
+
+export interface ValuationFactor {
+  readonly name: string
+  readonly multiplier: number
+  readonly reason: string
+}
+
+export interface ValuationResult {
+  readonly stage: FundingType
+  readonly baseMultiple: number
+  readonly adjustedMultiple: number
+  readonly factors: readonly ValuationFactor[]
+  readonly estimatedValuation: number
+  readonly range: { readonly low: number; readonly high: number }
+}
+
+export interface FundingRound {
+  readonly id: string
+  readonly type: FundingType
+  readonly amount: number
+  readonly preMoneyValuation: number
+  readonly postMoneyValuation: number
+  readonly dilution: number
+  readonly investorNames: readonly string[]
+  readonly closedDate: number
+}
+
+// ─── 財務状態の統合 ───
+
+export interface FinancialState {
+  readonly pl: ProfitAndLoss
+  readonly bs: BalanceSheet
+  readonly cf: CashFlow
+  readonly metrics: SaaSMetrics
+  readonly valuation: ValuationResult
+  readonly totalFunding: number
+  readonly fundingHistory: readonly FundingRound[]
+}
+
+// ─── MRR変動追跡 ───
+
+export interface MRRMovement {
+  readonly month: number
+  readonly newMRR: number
+  readonly expansionMRR: number
+  readonly contractionMRR: number
+  readonly churnedMRR: number
+  readonly netNewMRR: number
+  readonly endingMRR: number
+}

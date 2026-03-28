@@ -153,7 +153,8 @@ export class SimulationManager {
 
     // 財務の日次経費処理
     this.updateFinanceCosts()
-    this.finance.processDailyExpense()
+    const dailyCost = this.finance.getMonthlyTotalCost() / 21
+    this.finance.recordDailyExpense(dailyCost)
 
     // 月次処理
     if (date.month !== this.lastMonth) {
@@ -186,7 +187,21 @@ export class SimulationManager {
       this.product.getBugCount(),
       this.rng,
     )
-    this.finance.recordMonthlyRevenue(salesResult.revenue)
+    const funnel = this.sales.getFunnelStats()
+    const company = this.company.getState()!
+
+    this.finance.closeMonth({
+      mrr: this.sales.getMRR(),
+      newMRR: salesResult.revenue > 0 ? Math.round(salesResult.revenue * 0.3) : 0,
+      expansionMRR: Math.round(salesResult.revenue * 0.05),
+      contractionMRR: 0,
+      churnedMRR: Math.round(salesResult.churned * this.sales.getARPU()),
+      activeCustomers: funnel.activeCustomers,
+      churnedCustomers: salesResult.churned,
+      newCustomers: funnel.newCustomersThisMonth,
+      headcount: this.hr.getHeadcount() + 1,
+      stage: company.stage,
+    })
 
     // 自動リリース
     this.releaseFeatures()
@@ -195,8 +210,7 @@ export class SimulationManager {
   /** 四半期末処理 */
   private processQuarterEnd(date: GameDate): void {
     const company = this.company.getState()!
-    const growthRate = this.sales.getMRRGrowthRate()
-    this.finance.closeQuarter(company.stage, growthRate)
+    this.finance.closeQuarter(company.stage)
 
     this.eventBus.emit('quarter-end', {
       quarter: date.quarter,
@@ -211,11 +225,11 @@ export class SimulationManager {
     const serverCost = FINANCE_CONSTANTS.SERVER_COST_BASE +
       this.sales.getActiveCustomers() * FINANCE_CONSTANTS.SERVER_COST_PER_CUSTOMER
 
-    this.finance.setMonthlyCosts({
+    this.finance.setMonthlyTransaction({
       personnelCost: this.hr.calcMonthlyPayroll(),
       officeCost: officeRent,
-      serverCost: Math.round(serverCost),
-      marketingCost: this.sales.getMarketingBudget(),
+      hostingCost: Math.round(serverCost),
+      salesMarketingCost: this.sales.getMarketingBudget(),
     })
   }
 
