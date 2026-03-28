@@ -1,0 +1,43 @@
+{
+  "game": {
+    "title": "SAAS EMPIRE",
+    "subtitle": "SaaS Business Simulation",
+    "newGame": "New Game",
+    "continue": "Continue",
+    "settings": "Settings",
+    "quit": "Quit"
+  },
+  "hud": {
+    "cash": "Cash",
+    "valuation": "Valuation",
+    "headcount": "Employees",
+    "paused": "Paused"
+  },
+  "company": {
+    "found": "Found Company",
+    "name": "Company Name",
+    "industry": "Industry",
+    "founderName": "Founder Name",
+    "mission": "Mission"
+  },
+  "speed": {
+    "pause": "Pause",
+    "normal": "Normal",
+    "fast": "Fast",
+    "faster": "Faster",
+    "fastest": "Fastest"
+  },
+  "panel": {
+    "overview": "Overview",
+    "finance": "Finance",
+    "hr": "HR",
+    "product": "Product",
+    "market": "Market"
+  },
+  "time": {
+    "year": "Year {{year}}",
+    "quarter": "Q{{quarter}}",
+    "month": "Month {{month}}",
+    "day": "Day {{day}}"
+  }
+}

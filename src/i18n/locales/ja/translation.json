@@ -1,0 +1,43 @@
+{
+  "game": {
+    "title": "SAAS EMPIRE",
+    "subtitle": "SaaSビジネスシミュレーション",
+    "newGame": "新しいゲーム",
+    "continue": "続きから",
+    "settings": "設定",
+    "quit": "終了"
+  },
+  "hud": {
+    "cash": "手持ち資金",
+    "valuation": "企業価値",
+    "headcount": "従業員",
+    "paused": "一時停止中"
+  },
+  "company": {
+    "found": "会社を設立",
+    "name": "会社名",
+    "industry": "業界",
+    "founderName": "創業者名",
+    "mission": "ミッション"
+  },
+  "speed": {
+    "pause": "一時停止",
+    "normal": "通常",
+    "fast": "速い",
+    "faster": "とても速い",
+    "fastest": "最速"
+  },
+  "panel": {
+    "overview": "概要",
+    "finance": "財務",
+    "hr": "人事",
+    "product": "開発",
+    "market": "市場"
+  },
+  "time": {
+    "year": "{{year}}年目",
+    "quarter": "Q{{quarter}}",
+    "month": "{{month}}月",
+    "day": "{{day}}日"
+  }
+}
